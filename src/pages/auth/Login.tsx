@@ -5,6 +5,7 @@ import { AuthShell } from './AuthShell'
 import { Button } from '../../components/shared/Button'
 import { Field, Input, PasswordInput } from '../../components/shared/Input'
 import { useToast } from '../../components/shared/Toast'
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton'
 
 interface Errors {
   email?: string
@@ -16,8 +17,8 @@ export function Login() {
   const { toast } = useToast()
   const [email, setEmail] = useState('aarav.sharma@university.edu')
   const [password, setPassword] = useState('hostellife')
-  const [errors, setErrors] = useState<Errors>({})
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState<Errors>({})
 
   const submit = async () => {
     const errs: Errors = {}
@@ -27,7 +28,6 @@ export function Login() {
     if (Object.keys(errs).length > 0) return
 
     setLoading(true)
-    // Mock auth — no account is created or verified in this phase.
     await api.login(email, password)
     setLoading(false)
     toast('Welcome back! (demo sign-in)', 'success')
@@ -59,8 +59,8 @@ export function Login() {
             type="email"
             value={email}
             autoComplete="email"
-            error={!!errors.email}
             placeholder="you@college.edu"
+            error={!!errors.email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </Field>
@@ -72,17 +72,27 @@ export function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Field>
-        <div className="flex justify-end">
-          <Link
-            to="/forgot-password"
-            className="text-[13px] font-medium text-primary hover:text-[var(--c-primary-dark)]"
-          >
-            Forgot password?
-          </Link>
-        </div>
         <Button type="submit" size="lg" className="w-full" disabled={loading}>
           {loading ? 'Signing in…' : 'Sign in'}
         </Button>
+
+        {/* OR divider */}
+        <div className="mt-6 text-center">
+          <span className="text-ink-muted bg-bg px-2 rounded">OR</span>
+        </div>
+
+        <div id="google-button" className="mt-4" />
+
+        <GoogleSignInButton
+  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+  onSuccess={() => {
+    navigate('/app');
+  }}
+  onError={(error) => {
+    console.error('Google login failed:', error);
+  }}
+/>
+
         <p className="text-center text-xs text-ink-muted">
           This demo runs entirely in your browser — nothing is stored or sent anywhere.
         </p>

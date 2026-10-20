@@ -61,3 +61,28 @@ export async function requestPasswordReset(_email: string): Promise<{ ok: boolea
     window.setTimeout(() => resolve({ ok: true }), 700)
   })
 }
+
+/** Send Google ID token to backend for verification. */
+export async function loginWithGoogle(credential: string): Promise<{ ok: boolean; error?: string }> {
+  return new Promise((resolve) => {
+    window.fetch('/api/auth/google', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: credential }),
+      credentials: 'include',
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        if (data.ok) {
+          resolve({ ok: true })
+        } else {
+          resolve({ ok: false, error: data.error || 'Authentication failed.' })
+        }
+      })
+      .catch(() => {
+        resolve({ ok: false, error: 'Backend unavailable.' })
+      })
+  })
+}

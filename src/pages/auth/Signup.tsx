@@ -5,6 +5,7 @@ import { AuthShell } from './AuthShell'
 import { Button } from '../../components/shared/Button'
 import { Field, Input, PasswordInput } from '../../components/shared/Input'
 import { useToast } from '../../components/shared/Toast'
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton'
 
 interface Errors {
   name?: string
@@ -16,28 +17,62 @@ interface Errors {
 export function Signup() {
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [values, setValues] = useState({ name: '', email: '', password: '', confirm: '' })
-  const [errors, setErrors] = useState<Errors>({})
-  const [loading, setLoading] = useState(false)
 
-  const set = (key: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setValues((v) => ({ ...v, [key]: e.target.value }))
+  const [values, setValues] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirm: '',
+  })
+
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState<Errors>({})
+
+  const set =
+    (key: keyof typeof values) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValues((v) => ({ ...v, [key]: e.target.value }))
+    }
 
   const submit = async () => {
     const errs: Errors = {}
-    if (!values.name.trim() || values.name.trim().length < 2) errs.name = 'Tell us your name.'
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errs.email = 'Enter a valid email address.'
-    if (values.password.length < 6) errs.password = 'Use six characters or more.'
-    if (values.confirm !== values.password) errs.confirm = 'Passwords do not match.'
+
+    if (!values.name.trim() || values.name.trim().length < 2) {
+      errs.name = 'Tell us your name.'
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+      errs.email = 'Enter a valid email address.'
+    }
+
+    if (values.password.length < 6) {
+      errs.password = 'Use six characters or more.'
+    }
+
+    if (values.confirm !== values.password) {
+      errs.confirm = 'Passwords do not match.'
+    }
+
     setErrors(errs)
+
     if (Object.keys(errs).length > 0) return
 
     setLoading(true)
-    // Mock signup — the future Node.js backend will own real accounts.
-    await api.signup(values)
-    setLoading(false)
-    toast('Account ready! (demo signup)', 'success')
-    navigate('/app')
+
+    try {
+      await api.signup(values)
+      toast('Account ready! (demo signup)', 'success')
+      navigate('/app')
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to create your account.'
+
+      toast(message, 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,7 +82,10 @@ export function Signup() {
       footer={
         <>
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-primary hover:text-[var(--c-primary-dark)]">
+          <Link
+            to="/login"
+            className="font-medium text-primary hover:text-[var(--c-primary-dark)]"
+          >
             Sign in
           </Link>
         </>
@@ -57,7 +95,7 @@ export function Signup() {
         className="space-y-4"
         onSubmit={(e) => {
           e.preventDefault()
-          submit()
+          void submit()
         }}
       >
         <Field label="Full name" required error={errors.name}>
@@ -69,6 +107,7 @@ export function Signup() {
             onChange={set('name')}
           />
         </Field>
+
         <Field label="Email" required error={errors.email}>
           <Input
             type="email"
@@ -79,7 +118,13 @@ export function Signup() {
             onChange={set('email')}
           />
         </Field>
-        <Field label="Password" required error={errors.password} hint="At least six characters.">
+
+        <Field
+          label="Password"
+          required
+          error={errors.password}
+          hint="At least six characters."
+        >
           <PasswordInput
             value={values.password}
             autoComplete="new-password"
@@ -87,6 +132,7 @@ export function Signup() {
             onChange={set('password')}
           />
         </Field>
+
         <Field label="Confirm password" required error={errors.confirm}>
           <PasswordInput
             value={values.confirm}
@@ -95,10 +141,37 @@ export function Signup() {
             onChange={set('confirm')}
           />
         </Field>
-        <Button type="submit" size="lg" className="w-full" disabled={loading}>
+
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={loading}
+        >
           {loading ? 'Creating account…' : 'Create account'}
         </Button>
-        <p className="text-center text-xs text-ink-muted">
+
+        {/* OR divider */}
+        <div className="mt-6 text-center">
+          <span className="text-ink-muted bg-bg px-2 rounded">OR</span>
+        </div>
+
+        {/* Google Sign-In button container */}
+        <div className="mt-4 flex justify-center">
+          <div id="google-button" className="w-full flex justify-center" />
+        </div>
+
+       <GoogleSignInButton
+  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+  onSuccess={() => {
+    navigate('/app');
+  }}
+  onError={(error) => {
+    console.error('Google signup failed:', error);
+  }}
+/>
+
+        <p className="text-center text-xs text-ink-muted mt-4">
           The demo keeps your details local — nothing is saved to a server yet.
         </p>
       </form>
