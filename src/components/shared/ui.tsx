@@ -2,8 +2,14 @@ import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { Wallet } from 'lucide-react'
 import { cn } from './Button'
-import { CATEGORY_COLORS, type Category } from '../../types'
 
+const DARKENED: Record<string, string> = {
+  '#EF4444': '#DC2626',
+  '#22C55E': '#16A34A',
+  '#3B82F6': '#2563EB',
+  '#F59E0B': '#D97706',
+  '#8B5CF6': '#7C3AED',
+}
 export { Card, CardHeader } from './Card'
 
 export function Badge({
@@ -32,20 +38,7 @@ export function Badge({
   )
 }
 
-/* Slightly darker text tones so white/ pastel badge backgrounds stay readable. */
-const DARKENED: Record<string, string> = {
-  '#7655E8': '#6a45dd',
-  '#E9A23B': '#b97d1e',
-  '#20A879': '#178a63',
-  '#5B9CF5': '#2f7fe0',
-  '#E46B9C': '#c74478',
-  '#9F8DFF': '#7661f0',
-  '#929BAD': '#6f7891',
-}
 
-export function categoryBadgeStyle(category: Category) {
-  return { bg: `${CATEGORY_COLORS[category]}14`, text: DARKENED[category] ?? CATEGORY_COLORS[category] }
-}
 
 export function ProgressBar({
   pct,

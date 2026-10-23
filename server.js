@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import morgan from 'morgan';
 import { OAuth2Client } from 'google-auth-library';
+import 'dotenv/config';
 
 const app = express();
 const port = process.env.PORT || 5000;

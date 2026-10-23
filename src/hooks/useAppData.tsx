@@ -20,6 +20,7 @@ import type {
 } from '../types'
 import { uid } from '../lib/finance'
 import { monthKey } from '../lib/format'
+import { SELECTABLE_MONTHS } from '../lib/utils'
 
 interface AppDataValue {
   /** Null while the (mock) data service is hydrating. */
@@ -48,7 +49,7 @@ interface AppDataValue {
 const AppDataContext = createContext<AppDataValue | null>(null)
 
 /** Months the header offers for selection (mock timeline). */
-export const SELECTABLE_MONTHS = ['2026-10', '2026-09', '2026-08']
+export { SELECTABLE_MONTHS }
 
 function defaultMonth(): string {
   return MOCK_TODAY.slice(0, 7)
@@ -130,3 +131,4 @@ export function useAppData(): AppDataValue {
   if (!ctx) throw new Error('useAppData must be used within AppDataProvider')
   return ctx
 }
+

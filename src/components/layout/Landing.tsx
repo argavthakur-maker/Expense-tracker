@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react'
 import { Logo } from '../shared/ui'
 import { formatINR } from '../../lib/format'
+import { GixChat } from '../shared/GixChatPanel';
 
 /* ---------- Motion helpers ---------- */
 
@@ -636,6 +637,8 @@ export function Landing() {
       <HowItWorks />
       <FinalCTA />
       <Footer />
+
+      <GixChat />
     </div>
   )
 }

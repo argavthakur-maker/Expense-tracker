@@ -21,9 +21,9 @@ interface DayPoint {
 
 const gradientId = 'spendFill'
 
-function TrendTooltip({ active, payload }: { active?: boolean; payload?: { payload: DayPoint }[] }) {
+function TrendTooltip({ active, payload }: { active?: boolean; payload?: DayPoint[] }) {
   if (!active || !payload?.length) return null
-  const p = payload[0].payload
+  const p = payload[0]
   return (
     <div className="rounded-lg border border-line bg-card px-3 py-2 shadow-lift">
       <p className="text-xs font-semibold text-ink">{formatDateShort(p.date)}</p>
@@ -87,10 +87,10 @@ function DonutTooltip({
   payload,
 }: {
   active?: boolean
-  payload?: { payload: CategoryDatum & { pct: number } }[]
+  payload?: (CategoryDatum & { pct: number })[]
 }) {
   if (!active || !payload?.length) return null
-  const p = payload[0].payload
+  const p = payload[0]
   return (
     <div className="rounded-lg border border-line bg-card px-3 py-2 shadow-lift">
       <p className="text-xs font-semibold text-ink">{p.category}</p>

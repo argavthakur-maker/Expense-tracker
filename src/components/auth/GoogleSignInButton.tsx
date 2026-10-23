@@ -43,6 +43,8 @@ export function GoogleSignInButton({
     [onSuccess, onError, toast],
   )
 
+  useGoogleSignIn(clientId, handleCredentialResponse, onError)
+
   if (!clientId || clientId.startsWith('your_')) {
     return (
       <div className="mt-4 text-center text-sm text-ink-muted">
@@ -52,8 +54,6 @@ export function GoogleSignInButton({
       </div>
     )
   }
-
-  useGoogleSignIn(clientId, handleCredentialResponse, onError)
 
   return null
 }
