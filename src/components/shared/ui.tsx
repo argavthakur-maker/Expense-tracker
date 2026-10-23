@@ -11,6 +11,7 @@ const DARKENED: Record<string, string> = {
   '#8B5CF6': '#7C3AED',
 }
 export { Card, CardHeader } from './Card'
+export { categoryBadgeStyle } from '../../lib/utils'
 
 export function Badge({
   children,

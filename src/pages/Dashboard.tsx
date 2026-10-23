@@ -10,7 +10,7 @@ import { CategoryIcon } from '../components/shared/CategoryIcon'
 import { StatCards } from '../components/dashboard/StatCards'
 import { CategoryDonut, CategoryLegend, SpendingTrend } from '../components/dashboard/charts'
 import { cn } from '../components/shared/Button'
-import { categoryBadgeStyle } from '../components/shared/ui'
+import { categoryBadgeStyle } from '../lib/utils'
 import { EmptyState } from '../components/shared/ui'
 
 export function Dashboard() {
