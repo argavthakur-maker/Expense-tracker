@@ -72,7 +72,7 @@ export function Sidebar() {
           <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-ink/[0.08]">
             <div
               className="h-full rounded-full bg-primary"
-              style={{ width: `${Math.min(100, (spent / data.budget.monthly) * 100)}%` }}
+              style={{ width: `${data.budget.monthly > 0 ? Math.min(100, (spent / data.budget.monthly) * 100) : 0}%` }}
             />
           </div>
           <p className="mt-2 text-xs text-ink-muted">

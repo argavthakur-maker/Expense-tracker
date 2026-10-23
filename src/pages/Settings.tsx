@@ -82,14 +82,14 @@ export function Settings() {
                 onChange={(e) => setProfile({ ...profile, nickname: e.target.value })}
               />
             </Field>
-            <Field label="College" hint="Kept private in this demo.">
+            <Field label="College" hint="Your college or campus name.">
               <Input
                 value={profile.college}
                 onChange={(e) => setProfile({ ...profile, college: e.target.value })}
               />
             </Field>
           </div>
-          <Field label="Email" required hint="Mock accounts are not saved in this frontend phase.">
+          <Field label="Email" required hint="Used for account notifications and security.">
             <Input
               type="email"
               value={profile.email}
@@ -121,7 +121,7 @@ export function Settings() {
             </Field>
             <p className="mt-3 flex items-start gap-1.5 text-xs text-ink-muted">
               <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              Pocket money and targets are currently tracked in INR. More currencies arrive with the backend.
+              Pocket money and targets are tracked in Indian Rupees (₹).
             </p>
           </div>
         </Card>

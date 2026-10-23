@@ -3,7 +3,14 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import morgan from 'morgan';
 import { OAuth2Client } from 'google-auth-library';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import 'dotenv/config';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distPath = path.join(__dirname, 'dist');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -215,6 +222,18 @@ app.post('/api/auth/logout', (req, res) => {
 
   return res.json({ ok: true });
 });
+
+// Serve frontend build in production
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 // Start backend
 app.listen(port, () => {

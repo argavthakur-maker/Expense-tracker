@@ -56,7 +56,12 @@ export function Analytics() {
         ? 7
         : filter === 'month'
           ? Number(today.slice(8, 10))
-          : daysInMonth(month === '2026-10' ? '2026-09' : month)
+          : daysInMonth(
+              (() => {
+                const [y, m] = month.split('-').map(Number)
+                return m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, '0')}`
+              })()
+            )
     const avg = spent / Math.max(1, days)
     const thisWeek = totalSpent(thisWeeksExpenses(data?.expenses ?? [], today))
     const lastWeek = totalSpent(lastWeeksExpenses(data?.expenses ?? [], today))

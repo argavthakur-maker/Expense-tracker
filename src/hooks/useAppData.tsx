@@ -66,7 +66,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const mutate = useCallback((fn: (prev: AppData) => AppData) => {
-    setData((prev) => (prev ? fn(prev) : prev))
+    setData((prev) => {
+      if (!prev) return prev
+      const next = fn(prev)
+      api.saveAppData(next)
+      return next
+    })
   }, [])
 
   const value = useMemo<AppDataValue>(() => {

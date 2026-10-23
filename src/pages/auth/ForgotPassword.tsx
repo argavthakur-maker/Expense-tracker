@@ -26,7 +26,7 @@ export function ForgotPassword() {
     await api.requestPasswordReset(email)
     setLoading(false)
     setSent(true)
-    toast('Reset link ready (demo mode)', 'info')
+    toast('Password reset link dispatched.', 'info')
   }
 
   return (
@@ -49,8 +49,7 @@ export function ForgotPassword() {
       {sent ? (
         <div className="rounded-xl border border-line bg-card p-5 text-center">
           <p className="text-sm leading-relaxed text-ink-secondary">
-            A password reset link would be sent to <span className="font-medium text-ink">{email}</span> once
-            the backend is connected. For now you can head back and sign in with the demo account.
+            If an account is registered with <span className="font-medium text-ink">{email}</span>, we have sent instructions to reset your password.
           </p>
           <div className="mt-4 flex justify-center gap-2.5">
             <Button variant="outline" onClick={() => navigate('/login')}>

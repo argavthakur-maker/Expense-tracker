@@ -1,7 +1,19 @@
 import type { Category } from '../types/index'
 import { CATEGORY_COLORS } from '../types/index'
 
-export const SELECTABLE_MONTHS = ['2026-10', '2026-09', '2026-08']
+export function getSelectableMonths(): string[] {
+  const months: string[] = []
+  const now = new Date()
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    months.push(`${yyyy}-${mm}`)
+  }
+  return months
+}
+
+export const SELECTABLE_MONTHS = getSelectableMonths()
 
 export const DARKENED: Record<Category, string> = {
   Food: '#5F3FD6',

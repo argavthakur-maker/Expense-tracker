@@ -15,8 +15,8 @@ interface Errors {
 export function Login() {
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [email, setEmail] = useState('aarav.sharma@university.edu')
-  const [password, setPassword] = useState('hostellife')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
 
@@ -30,7 +30,7 @@ export function Login() {
     setLoading(true)
     await api.login(email, password)
     setLoading(false)
-    toast('Welcome back! (demo sign-in)', 'success')
+    toast('Welcome back!', 'success')
     navigate('/app')
   }
 
@@ -94,7 +94,7 @@ export function Login() {
 />
 
         <p className="text-center text-xs text-ink-muted">
-          This demo runs entirely in your browser — nothing is stored or sent anywhere.
+          Your personal and financial data is stored securely and privately.
         </p>
       </form>
     </AuthShell>

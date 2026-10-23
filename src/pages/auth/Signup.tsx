@@ -61,7 +61,7 @@ export function Signup() {
 
     try {
       await api.signup(values)
-      toast('Account ready! (demo signup)', 'success')
+      toast('Account ready! Welcome to Hostelers.', 'success')
       navigate('/app')
     } catch (error) {
       const message =
@@ -102,7 +102,7 @@ export function Signup() {
           <Input
             value={values.name}
             autoComplete="name"
-            placeholder="Aarav Sharma"
+            placeholder="Full Name"
             error={!!errors.name}
             onChange={set('name')}
           />
@@ -172,7 +172,7 @@ export function Signup() {
 />
 
         <p className="text-center text-xs text-ink-muted mt-4">
-          The demo keeps your details local — nothing is saved to a server yet.
+          By signing up, you agree to our terms and privacy policy.
         </p>
       </form>
     </AuthShell>

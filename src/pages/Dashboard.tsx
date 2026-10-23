@@ -91,9 +91,18 @@ export function Dashboard() {
             title="Spending trend"
             description="Day-wise spending across the selected month."
           />
-          <div className="mt-4">
-            <SpendingTrend data={dailyTotals(monthExpenses)} />
-          </div>
+          {monthExpenses.length === 0 ? (
+            <EmptyState
+              icon={<Receipt />}
+              title="No spending recorded"
+              message="Track expenses this month to see your day-by-day spending trend."
+              className="py-10"
+            />
+          ) : (
+            <div className="mt-4">
+              <SpendingTrend data={dailyTotals(monthExpenses)} />
+            </div>
+          )}
         </Card>
       </motion.div>
 
