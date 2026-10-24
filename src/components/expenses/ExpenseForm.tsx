@@ -22,7 +22,7 @@ function validate(values: ExpenseFormValues): Partial<Record<keyof ExpenseFormVa
   } else if (Number(values.amount) <= 0) {
     errors.amount = 'The amount needs to be more than zero.'
   } else if (Number(values.amount) > 50000) {
-    errors.amount = 'That is above the monthly pocket money limit for this demo.'
+    errors.amount = 'Amount cannot exceed ₹50,000 for a single transaction.'
   }
   if (!values.date) errors.date = 'Pick the day you spent this.'
   return errors

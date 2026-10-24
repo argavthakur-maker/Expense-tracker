@@ -7,6 +7,8 @@ import { Avatar, Logo } from '../shared/ui'
 import { cn } from '../shared/Button'
 import { monthKey, monthLabel } from '../../lib/format'
 
+import { SELECTABLE_MONTHS } from '../../lib/utils'
+
 const TITLES: { match: string; title: string; subtitle: string }[] = [
   { match: '/app/expenses', title: 'Your Expenses', subtitle: 'Keep track of every rupee you spend.' },
   { match: '/app/budget', title: 'Budget Planner', subtitle: 'Plan where your pocket money goes.' },
@@ -14,9 +16,6 @@ const TITLES: { match: string; title: string; subtitle: string }[] = [
   { match: '/app/savings', title: 'Savings Goals', subtitle: 'Set targets and save towards them.' },
   { match: '/app/settings', title: 'Settings', subtitle: 'Personalize your Hostelers experience.' },
 ]
-
-/** Months with mock data (most recent first), keyed "yyyy-mm". */
-const MONTHS = ['2026-10', '2026-09', '2026-08']
 
 export function AppHeader({ onMenu }: { onMenu: () => void }) {
   const { data, month, setMonth, markNotificationRead } = useAppData()
@@ -29,7 +28,7 @@ export function AppHeader({ onMenu }: { onMenu: () => void }) {
   const isOverview = pathname === '/app'
   const title = TITLES.find((t) => pathname.startsWith(t.match))
   const unread = data?.notifications.filter((n) => !n.read).length ?? 0
-  const hour = Number(MOCK_STOCK_HOUR())
+  const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   if (!data) return null
@@ -55,7 +54,7 @@ export function AppHeader({ onMenu }: { onMenu: () => void }) {
           {isOverview ? (
             <>
               <h1 className="truncate text-[26px] font-bold leading-tight text-ink">
-                {greeting}, {data.profile.nickname} 👋
+                {greeting}, {data.profile.nickname || data.profile.name || 'there'} 👋
               </h1>
               <p className="mt-0.5 text-sm text-ink-muted">
                 Here's how your money is looking this month.
@@ -84,7 +83,7 @@ export function AppHeader({ onMenu }: { onMenu: () => void }) {
               onChange={(e) => setMonth(e.target.value)}
               className="h-9 appearance-none rounded-lg border border-line bg-card py-0 pl-8 pr-7 text-[13px] font-medium text-ink outline-none transition-colors hover:border-primary/40"
             >
-              {MONTHS.map((m) => (
+              {SELECTABLE_MONTHS.map((m) => (
                 <option key={m} value={m}>
                   {monthLabel(m)}
                 </option>
@@ -205,9 +204,4 @@ export function AppHeader({ onMenu }: { onMenu: () => void }) {
       </div>
     </header>
   )
-}
-
-/* The mock timeline is set in October 2026; greet consistently with 9:00 am. */
-function MOCK_STOCK_HOUR(): string {
-  return '9'
 }

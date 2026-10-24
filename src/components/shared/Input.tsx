@@ -63,7 +63,7 @@ export function Input({ className, error, prefix, ...rest }: InputProps) {
 
 export function PasswordInput(props: InputProps) {
   const [visible, setVisible] = useState(false)
-  const { className, error, prefix, ...rest } = props
+  const { className, error, prefix: _prefix, ...rest } = props
   return (
     <div
       className={cn(

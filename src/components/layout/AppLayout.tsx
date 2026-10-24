@@ -5,6 +5,7 @@ import { X } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { AppHeader } from './AppHeader'
 import { Logo } from '../shared/ui'
+import { AskGix } from '../ai/AskGix'
 
 export function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -16,6 +17,7 @@ export function AppLayout() {
   return (
     <div className="min-h-screen bg-bg">
       <Sidebar />
+      <AskGix />
 
       {/* Mobile drawer */}
       <AnimatePresence>
