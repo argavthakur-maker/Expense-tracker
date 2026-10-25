@@ -3,6 +3,10 @@ import type { AppData } from '../types'
 
 const STORAGE_KEY = 'hostelers_app_data'
 
+// In production, set VITE_API_URL to the deployed backend URL.
+// In local development, an empty base URL keeps using the Vite /api proxy.
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+
 function getInitialState(): AppData {
   if (typeof window !== 'undefined') {
     try {
@@ -108,7 +112,7 @@ export async function askGix(
 ): Promise<{ ok: boolean; reply?: string; error?: string }> {
   return new Promise((resolve) => {
     window
-      .fetch('/api/ai/chat', {
+      .fetch(`${API_BASE_URL}/api/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages, context }),
@@ -134,7 +138,7 @@ export async function askGix(
 /** Send Google ID token to backend for verification. */
 export async function loginWithGoogle(credential: string): Promise<{ ok: boolean; error?: string }> {
   return new Promise((resolve) => {
-    window.fetch('/api/auth/google', {
+    window.fetch(`${API_BASE_URL}/api/auth/google`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
