@@ -23,7 +23,6 @@ import {
 } from 'lucide-react'
 import { Logo } from '../shared/ui'
 import { formatINR } from '../../lib/format'
-import { GixChat } from '../shared/GixChatPanel';
 
 /* ---------- Motion helpers ---------- */
 
@@ -637,8 +636,6 @@ export function Landing() {
       <HowItWorks />
       <FinalCTA />
       <Footer />
-
-      <GixChat />
     </div>
   )
 }
