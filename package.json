@@ -39,15 +39,23 @@
     "typescript": "~7.0.2",
     "vite": "^8.3.4"
   },
-  "description": "This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.",
+  "description": "Hostelers — expense management built for hostel and college students. Track expenses, set budgets, build savings goals and chat with Gix, a Gemini-powered AI assistant.",
   "main": "postcss.config.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/argavthakur-maker/Expense-tracker.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "expense-tracker",
+    "budget",
+    "hostel-students",
+    "react",
+    "typescript",
+    "vite",
+    "gemini-ai"
+  ],
+  "author": "argavthakur-maker",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/argavthakur-maker/Expense-tracker/issues"
   },
