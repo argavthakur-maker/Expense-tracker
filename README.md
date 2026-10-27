@@ -37,8 +37,8 @@ Log expenses in seconds, set monthly and category budgets, watch live analytics 
 | 🎯 | **Budgets** | Monthly budget plus per-category budgets with live progress |
 | 📈 | **Analytics** | Interactive charts (Recharts) — category breakdowns, weekly trends and more |
 | 🏆 | **Savings Goals** | Create goals with target amounts and dates, and track progress |
-| 🤖 | **Ask Gix (AI)** | Gemini-powered chat assistant with your financial context for real, practical answers |
-| 🔐 | **Google Sign-In** | Secure one-click authentication with verified Google accounts (httpOnly session cookies) |
+| 🤖 | **Ask Gix (AI)** | A chat assistant with your financial context for real, practical answers |
+| 🔐 | **Google Sign-In** | Secure one-click authentication with verified Google accounts|
 | 🌗 | **Dark Mode** | Light / dark theme with system-wide sync |
 | ⚡ | **Smooth UX** | Framer Motion animations, toast notifications, responsive layout |
 
