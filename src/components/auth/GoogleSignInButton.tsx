@@ -5,7 +5,7 @@ import { useToast } from '../../components/shared/Toast'
 
 export interface GoogleSignInButtonProps {
   clientId: string
-  onSuccess?: (credential: string) => void
+  onSuccess?: (user: api.AuthUser) => void
   onError?: (error: string) => void
 }
 
@@ -21,7 +21,7 @@ export function GoogleSignInButton({
       try {
         const res = await api.loginWithGoogle(credential)
 
-        if (!res.ok) {
+        if (!res.ok || !res.user) {
           const message = res.error || 'Google authentication failed.'
           toast(message, 'error')
           onError?.(message)
@@ -29,7 +29,7 @@ export function GoogleSignInButton({
         }
 
         toast('Google sign-in successful!', 'success')
-        onSuccess?.(credential)
+        onSuccess?.(res.user)
       } catch (error) {
         const message =
           error instanceof Error

@@ -6,6 +6,7 @@ import { Button } from '../../components/shared/Button'
 import { Field, Input, PasswordInput } from '../../components/shared/Input'
 import { useToast } from '../../components/shared/Toast'
 import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton'
+import { useAppData } from '../../hooks/useAppData'
 
 interface Errors {
   name?: string
@@ -17,6 +18,7 @@ interface Errors {
 export function Signup() {
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { updateProfile } = useAppData()
 
   const [values, setValues] = useState({
     name: '',
@@ -61,6 +63,18 @@ export function Signup() {
 
     try {
       await api.signup(values)
+
+      // The signup endpoint is still mocked, so record the chosen identity
+      // locally in this account's own data slice to keep the header profile
+      // populated and the dashboard fresh.
+      const normalized = values.email.toLowerCase()
+      api.setCurrentAccount(normalized)
+      updateProfile({
+        ...api.getState().profile,
+        name: values.name.trim(),
+        email: normalized,
+      })
+
       toast('Account ready! Welcome to Hostelers.', 'success')
       navigate('/app')
     } catch (error) {
@@ -163,8 +177,14 @@ export function Signup() {
 
        <GoogleSignInButton
   clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-  onSuccess={() => {
-    navigate('/app');
+  onSuccess={(user: api.AuthUser) => {
+    api.setCurrentAccount(user.email)
+    updateProfile({
+      ...api.getState().profile,
+      name: user.name,
+      email: user.email,
+    })
+    navigate('/app')
   }}
   onError={(error) => {
     console.error('Google signup failed:', error);

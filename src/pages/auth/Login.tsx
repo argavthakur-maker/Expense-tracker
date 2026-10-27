@@ -6,6 +6,7 @@ import { Button } from '../../components/shared/Button'
 import { Field, Input, PasswordInput } from '../../components/shared/Input'
 import { useToast } from '../../components/shared/Toast'
 import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton'
+import { useAppData } from '../../hooks/useAppData'
 
 interface Errors {
   email?: string
@@ -15,6 +16,7 @@ interface Errors {
 export function Login() {
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { updateProfile } = useAppData()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -29,6 +31,27 @@ export function Login() {
 
     setLoading(true)
     await api.login(email, password)
+
+    // Point the app data at this account's own slice so the dashboard is
+    // fresh (not a previous user's data). Mocked login has no server
+    // roundtrip, so record the entered email and a name derived from it —
+    // users can correct their display name from the Settings page.
+    const normalized = email.toLowerCase()
+    api.setCurrentAccount(normalized)
+    updateProfile({
+      ...api.getState().profile,
+      email: normalized,
+      name:
+        api.getState().profile.name ||
+        normalized
+          .split('@')[0]
+          .replace(/[._-]+|[0-9]+$/g, ' ')
+          .trim()
+          .split(/\s+/)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' '),
+    })
+
     setLoading(false)
     toast('Welcome back!', 'success')
     navigate('/app')
@@ -85,8 +108,14 @@ export function Login() {
 
         <GoogleSignInButton
   clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-  onSuccess={() => {
-    navigate('/app');
+  onSuccess={(user) => {
+    api.setCurrentAccount(user.email)
+    updateProfile({
+      ...api.getState().profile,
+      name: user.name,
+      email: user.email,
+    })
+    navigate('/app')
   }}
   onError={(error) => {
     console.error('Google login failed:', error);

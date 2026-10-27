@@ -248,9 +248,8 @@ function IconAction({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`rounded-lg p-2 text-ink-muted transition-colors hover:bg-ink/5 ${
-        danger ? 'hover:text-danger' : 'hover:text-ink'
-      }`}
+      className={`rounded-lg p-2 text-ink-muted transition-colors hover:bg-ink/5 ${danger ? 'hover:text-danger' : 'hover:text-ink'
+        }`}
     >
       {children}
     </button>

@@ -6,6 +6,7 @@ import { useAppData } from '../../hooks/useAppData'
 import { Avatar, Logo } from '../shared/ui'
 import { cn } from '../shared/Button'
 import { monthKey, monthLabel } from '../../lib/format'
+import * as api from '../../services/api'
 
 import { SELECTABLE_MONTHS } from '../../lib/utils'
 
@@ -187,6 +188,7 @@ export function AppHeader({ onMenu }: { onMenu: () => void }) {
                       <button
                         onClick={() => {
                           setProfileOpen(false)
+                          void api.logout()
                           navigate('/')
                         }}
                         className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-ink-secondary transition-colors hover:bg-ink/5 hover:text-ink"
