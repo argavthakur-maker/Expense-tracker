@@ -37,7 +37,7 @@ Log expenses in seconds, set monthly and category-wise budgets, analyse where ev
 | 🎯 | **Budgets** | Monthly budget plus per-category allocations with live progress and near/over-budget alerts |
 | 📈 | **Analytics** | Interactive charts (Recharts) — category breakdowns, weekly trends and audit statistics |
 | 🏆 | **Savings Goals** | Create goals with target amounts and dates, and track progress toward them |
-| 🤖 | **Ask Gix (AI)** | In-app chat assistant backed by Google Gemini, grounded in the user's real financial data |
+| 🤖 | **Ask Gix (AI)** | In-app chat assistant , grounded in the user's real financial data |
 | 👤 | **Authentication** | One-click Google Sign-In with server-side session cookies; the header profile reflects the signed-in identity |
 | 🧑‍🤝‍🧑 | **Multi-account data** | Each signed-in account gets its own independent data slice — a fresh dashboard, no cross-account leakage |
 | 🌗 | **Dark Mode** | Light / dark theme, persisted per account |
