@@ -1,5 +1,5 @@
 import { useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, IndianRupee } from 'lucide-react'
 import { cn } from './Button'
 
 export interface FieldProps {
@@ -41,9 +41,21 @@ export function Input({ className, error, prefix, ...rest }: InputProps) {
           error && 'border-danger/70',
         )}
       >
-        <span className="pl-3 text-sm text-ink-muted">{prefix}</span>
+        <span className="flex items-center pl-3 text-sm text-ink-muted">
+          {prefix === '₹' ? (
+            /* The ₹ text glyph can render as a broken fallback bar depending
+               on the loaded font subset — the SVG icon always renders. */
+            <IndianRupee className="h-3.5 w-3.5" />
+          ) : (
+            prefix
+          )}
+        </span>
         <input
-          className="h-full w-full bg-transparent px-2.5 text-sm text-ink outline-none placeholder:text-ink-muted"
+          className={cn(
+            'h-full w-full bg-transparent px-2.5 text-sm text-ink outline-none shadow-none focus:outline-none focus:shadow-none focus-visible:outline-none focus-visible:shadow-none focus-visible:ring-0 placeholder:text-ink-muted',
+            className,
+          )}
+          style={{ boxShadow: 'none' }}
           {...rest}
         />
       </div>
@@ -74,7 +86,8 @@ export function PasswordInput(props: InputProps) {
     >
       <input
         type={visible ? 'text' : 'password'}
-        className="h-full w-full bg-transparent px-3 text-sm text-ink outline-none placeholder:text-ink-muted"
+        className="h-full w-full bg-transparent px-3 text-sm text-ink outline-none shadow-none focus:outline-none focus:shadow-none focus-visible:outline-none focus-visible:shadow-none focus-visible:ring-0 placeholder:text-ink-muted"
+        style={{ boxShadow: 'none' }}
         {...rest}
       />
       <button
