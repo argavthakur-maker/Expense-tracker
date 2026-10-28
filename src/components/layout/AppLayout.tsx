@@ -6,9 +6,12 @@ import { Sidebar } from './Sidebar'
 import { AppHeader } from './AppHeader'
 import { Logo } from '../shared/ui'
 import { AskGix } from '../ai/AskGix'
+import { GixSuggestionPopup } from '../ai/GixSuggestionPopup'
+import { useAiInsightNotifications } from '../../hooks/useAiInsightNotifications'
 
 export function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false)
+  useAiInsightNotifications()
 
   useEffect(() => {
     setDrawerOpen(false)
@@ -18,6 +21,7 @@ export function AppLayout() {
     <div className="min-h-screen bg-bg">
       <Sidebar />
       <AskGix />
+      <GixSuggestionPopup />
 
       {/* Mobile drawer */}
       <AnimatePresence>

@@ -17,13 +17,16 @@ interface DayPoint {
   amount: number
 }
 
+/** Recharts tooltip entries wrap our own data item inside a `payload` field. */
+type TooltipEntry<T> = { payload?: T }
+
 /* ---------- Spending trend (area) ---------- */
 
 const gradientId = 'spendFill'
 
-function TrendTooltip({ active, payload }: { active?: boolean; payload?: DayPoint[] }) {
+function TrendTooltip({ active, payload }: { active?: boolean; payload?: TooltipEntry<DayPoint>[] }) {
   if (!active || !payload?.length) return null
-  const p = payload[0]
+  const p = (payload[0].payload ?? payload[0]) as DayPoint
   return (
     <div className="rounded-lg border border-line bg-card px-3 py-2 shadow-lift">
       <p className="text-xs font-semibold text-ink">{formatDateShort(p.date)}</p>
@@ -87,10 +90,10 @@ function DonutTooltip({
   payload,
 }: {
   active?: boolean
-  payload?: (CategoryDatum & { pct: number })[]
+  payload?: TooltipEntry<CategoryDatum & { pct: number }>[]
 }) {
   if (!active || !payload?.length) return null
-  const p = payload[0]
+  const p = (payload[0].payload ?? payload[0]) as CategoryDatum & { pct: number }
   return (
     <div className="rounded-lg border border-line bg-card px-3 py-2 shadow-lift">
       <p className="text-xs font-semibold text-ink">{p.category}</p>

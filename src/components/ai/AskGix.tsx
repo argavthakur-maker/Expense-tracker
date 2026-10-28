@@ -44,6 +44,7 @@ export function AskGix() {
   const [messages, setMessages] = useState<ChatEntry[]>([])
 
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   // Snapshot of the user's finances, generated fresh per request.
   const context = useMemo(() => {
@@ -91,14 +92,28 @@ export function AskGix() {
     }
     if (open) {
       window.addEventListener('keydown', onKey)
-      return () => window.removeEventListener('keydown', onKey)
+      const t = window.setTimeout(() => {
+        textareaRef.current?.focus()
+      }, 80)
+      return () => {
+        window.removeEventListener('keydown', onKey)
+        window.clearTimeout(t)
+      }
     }
     return undefined
   }, [open])
 
+  // Keep textarea height aligned with content without showing awkward scrollbars
+  useEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, 112)}px`
+  }, [input])
+
   async function send(text: string) {
     const question = text.trim()
-    if (!question || sending || !context) return
+    if (!question || sending) return
 
     const userEntry: ChatEntry = { id: nextId(), role: 'user', text: question }
     const next = [...messages, userEntry]
@@ -110,7 +125,7 @@ export function AskGix() {
       // Error bubbles are UI-only feedback — don't feed them back to the model
       // as conversation history, or Gix starts answering to nonsense.
       next.filter((m) => !m.failed).map((m) => ({ role: m.role, text: m.text })),
-      context,
+      context || {},
     )
 
     setSending(false)
@@ -263,14 +278,27 @@ export function AskGix() {
                 className="flex items-end gap-2"
               >
                 <textarea
+                  ref={textareaRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key !== 'Enter' || e.shiftKey) return
-                    // Let an IME composition finish before sending
-                    if (e.nativeEvent.isComposing) return
-                    e.preventDefault()
-                    send(input)
+                    const isEnter =
+                      e.key === 'Enter' ||
+                      e.code === 'Enter' ||
+                      e.code === 'NumpadEnter' ||
+                      e.keyCode === 13
+
+                    if (isEnter) {
+                      if (e.shiftKey) {
+                        // Allow Shift+Enter to create a new line
+                        return
+                      }
+                      // Plain Enter always sends the prompt and prevents newline insertion
+                      e.preventDefault()
+                      if (input.trim() && !sending) {
+                        send(input)
+                      }
+                    }
                   }}
                   rows={1}
                   placeholder="Ask about your money…"

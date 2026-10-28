@@ -11,6 +11,7 @@ import { MOCK_TODAY } from '../data/mockData'
 import * as api from '../services/api'
 import type {
   AppData,
+  AppNotification,
   Budget,
   Expense,
   ExpenseDraft,
@@ -43,6 +44,8 @@ interface AppDataValue {
   updateSavedAmount: (id: string, saved: number) => void
   updateProfile: (profile: UserProfile) => void
   updatePreferences: (patch: Partial<Preferences>) => void
+  /** Appends a notification unless one with the same id already exists. */
+  addNotification: (n: AppNotification) => void
   markNotificationRead: (id: string) => void
 }
 
@@ -119,6 +122,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       updateProfile: (profile) => mutate((prev) => ({ ...prev, profile })),
       updatePreferences: (patch) =>
         mutate((prev) => ({ ...prev, preferences: { ...prev.preferences, ...patch } })),
+      addNotification: (n) =>
+        mutate((prev) => {
+          if (prev.notifications.some((m) => m.id === n.id)) return prev
+          const notifications = [n, ...prev.notifications].slice(0, 30)
+          return { ...prev, notifications }
+        }),
       markNotificationRead: (id) =>
         mutate((prev) => ({
           ...prev,
