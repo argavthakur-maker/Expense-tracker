@@ -69,13 +69,23 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const mutate = useCallback((fn: (prev: AppData) => AppData) => {
+    // The updater must stay pure: no side effects (localStorage writes, emit)
+    // inside it. React StrictMode re-invokes updaters, and any side effect here
+    // gets applied more than once — which used to insert the same expense twice.
     setData((prev) => {
       if (!prev) return prev
-      const next = fn(prev)
-      api.saveAppData(next)
-      return next
+      return fn(prev)
     })
   }, [])
+
+  // Persist every committed change exactly once, after React has settled.
+  // saveAppData emits the same object back, so React bails out of the extra
+  // render and this effect does not run again.
+  useEffect(() => {
+    if (data && data !== api.getState()) {
+      api.saveAppData(data)
+    }
+  }, [data])
 
   const value = useMemo<AppDataValue>(() => {
     return {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CATEGORIES, type Category, type Expense } from '../../types'
 import { isoDate } from '../../lib/format'
 import { Modal } from '../shared/Modal'
@@ -50,6 +50,7 @@ export function ExpenseFormModal({
   const [values, setValues] = useState<ExpenseFormValues>(emptyValues)
   const [errors, setErrors] = useState<Partial<Record<keyof ExpenseFormValues, string>>>({})
   const [submitting, setSubmitting] = useState(false)
+  const submittingRef = useRef(false)
 
   useEffect(() => {
     if (open) {
@@ -74,12 +75,17 @@ export function ExpenseFormModal({
   }, [values.amount])
 
   const submit = () => {
+    // Synchronous guard: state updates aren't visible to a second submit() call
+    // in the same event tick, so a ref is used to be double-submit proof.
+    if (submittingRef.current) return
     const errs = validate(values)
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
     setSubmitting(true)
+    submittingRef.current = true
     // Simulated latency mirrors the future API round-trip.
     window.setTimeout(() => {
+      submittingRef.current = false
       setSubmitting(false)
       onSave(values)
       onClose()
@@ -102,7 +108,7 @@ export function ExpenseFormModal({
             <Button variant="ghost" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={submit} disabled={submitting}>
+            <Button type="button" onClick={submit} disabled={submitting}>
               {submitting ? 'Saving…' : editing ? 'Save changes' : 'Save expense'}
             </Button>
           </div>

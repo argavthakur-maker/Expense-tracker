@@ -1,4 +1,3 @@
-```javascript
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -131,7 +130,7 @@ function upsertUser(profile) {
 
   if (!user) {
     user = {
-      id: `user_${ googleId } `,
+      id: `user_${googleId} `,
       googleId,
       email,
       name: name || email.split('@')[0],
@@ -193,21 +192,21 @@ function buildContextBlock(context) {
   }
 
   if (context.month) {
-    lines.push(`Current month: ${ context.month }.`);
+    lines.push(`Current month: ${context.month}.`);
   }
 
   if (typeof context.monthlyBudget === 'number') {
-    lines.push(`Monthly budget: ₹${ context.monthlyBudget }.`);
+    lines.push(`Monthly budget: ₹${context.monthlyBudget}.`);
   }
 
   if (typeof context.spentThisMonth === 'number') {
     lines.push(
-      `Spent so far this month: ₹${ roundAmount(context.spentThisMonth) }.`
+      `Spent so far this month: ₹${roundAmount(context.spentThisMonth)}.`
     );
   }
 
   if (typeof context.daysRemaining === 'number') {
-    lines.push(`Days remaining in the month: ${ context.daysRemaining }.`);
+    lines.push(`Days remaining in the month: ${context.daysRemaining}.`);
   }
 
   if (
@@ -218,7 +217,7 @@ function buildContextBlock(context) {
       'Spending by category this month: ' +
       context.categoryTotals
         .map(
-          (c) => `${ c.category } ₹${ roundAmount(c.amount) } `
+          (c) => `${c.category} ₹${roundAmount(c.amount)} `
         )
         .join(', ') +
       '.'
@@ -227,7 +226,7 @@ function buildContextBlock(context) {
 
   if (typeof context.weeklyTotal === 'number') {
     lines.push(
-      `Spent in the last 7 days: ₹${ roundAmount(context.weeklyTotal) }.`
+      `Spent in the last 7 days: ₹${roundAmount(context.weeklyTotal)}.`
     );
   }
 
@@ -241,7 +240,7 @@ function buildContextBlock(context) {
         'Category budgets: ' +
         budgets
           .map(
-            (c) => `${ c.category } ₹${ roundAmount(c.amount) } `
+            (c) => `${c.category} ₹${roundAmount(c.amount)} `
           )
           .join(', ') +
         '.'
@@ -257,7 +256,7 @@ function buildContextBlock(context) {
 
     for (const expense of context.recentExpenses) {
       lines.push(
-        `  - ${ expense.date }: "${expense.title}" ₹${ roundAmount(expense.amount) } (${ expense.category })`
+        `  - ${expense.date}: "${expense.title}" ₹${roundAmount(expense.amount)} (${expense.category})`
       );
     }
   }
@@ -267,7 +266,7 @@ function buildContextBlock(context) {
 
     for (const goal of context.goals) {
       lines.push(
-        `  - "${goal.name}": saved ₹${ roundAmount(goal.saved) } of ₹${ roundAmount(goal.target) }, target date ${ goal.targetDate }.`
+        `  - "${goal.name}": saved ₹${roundAmount(goal.saved)} of ₹${roundAmount(goal.target)}, target date ${goal.targetDate}.`
       );
     }
   }
@@ -363,7 +362,7 @@ app.post('/api/ai/chat', async (req, res) => {
         parts: [
           {
             text:
-              `My financial snapshot: \n${ contextBlock } \n\n-- -\n\nQuestion: ${ message.parts[0].text } `,
+              `My financial snapshot: \n${contextBlock} \n\n-- -\n\nQuestion: ${message.parts[0].text} `,
           },
         ],
       };
@@ -395,130 +394,130 @@ app.post('/api/ai/chat', async (req, res) => {
       const url =
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 
-for (let attempt = 1; attempt <= 2; attempt += 1) {
-  const controller = new AbortController();
+      for (let attempt = 1; attempt <= 2; attempt += 1) {
+        const controller = new AbortController();
 
-  const timeout = setTimeout(
-    () => controller.abort(),
-    ATTEMPT_TIMEOUT_MS
-  );
+        const timeout = setTimeout(
+          () => controller.abort(),
+          ATTEMPT_TIMEOUT_MS
+        );
 
-  let geminiResp;
+        let geminiResp;
 
-  try {
-    geminiResp = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-  } catch (fetchErr) {
-    clearTimeout(timeout);
+        try {
+          geminiResp = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          });
+        } catch (fetchErr) {
+          clearTimeout(timeout);
 
-    if (fetchErr.name === 'AbortError') {
-      timedOut = true;
-      lastStatus = 0;
-      break;
+          if (fetchErr.name === 'AbortError') {
+            timedOut = true;
+            lastStatus = 0;
+            break;
+          }
+
+          throw fetchErr;
+        }
+
+        clearTimeout(timeout);
+
+        if (geminiResp.ok) {
+          data = await geminiResp.json();
+          break outer;
+        }
+
+        lastStatus = geminiResp.status;
+        timedOut = false;
+
+        try {
+          const errorBody = await geminiResp.json();
+          lastDetail = errorBody?.error?.message || '';
+        } catch {
+          // Ignore response parsing errors.
+        }
+
+        console.error(
+          `Gemini API error (${model}, attempt ${attempt}):`,
+          lastStatus,
+          lastDetail
+        );
+
+        if (!TRANSIENT_STATUS.has(lastStatus)) {
+          break outer;
+        }
+
+        if (attempt === 1) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+      }
     }
 
-    throw fetchErr;
-  }
+    if (!data) {
+      if (timedOut) {
+        return res.status(504).json({
+          ok: false,
+          error: 'Gix took too long to answer. Please try again in a moment.',
+        });
+      }
 
-  clearTimeout(timeout);
+      console.error('Gemini API error:', lastStatus, lastDetail);
 
-  if (geminiResp.ok) {
-    data = await geminiResp.json();
-    break outer;
-  }
+      if (lastStatus === 429) {
+        return res.status(429).json({
+          ok: false,
+          error: 'Gix has hit its free daily request limit — please try again later.',
+        });
+      }
 
-  lastStatus = geminiResp.status;
-  timedOut = false;
-
-  try {
-    const errorBody = await geminiResp.json();
-    lastDetail = errorBody?.error?.message || '';
-  } catch {
-    // Ignore response parsing errors.
-  }
-
-  console.error(
-    `Gemini API error (${model}, attempt ${attempt}):`,
-    lastStatus,
-    lastDetail
-  );
-
-  if (!TRANSIENT_STATUS.has(lastStatus)) {
-    break outer;
-  }
-
-  if (attempt === 1) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-  }
-}
+      return res.status(lastStatus || 502).json({
+        ok: false,
+        error: 'Gemini API request failed.',
+        status: lastStatus,
+        detail: lastDetail,
+      });
     }
 
-if (!data) {
-  if (timedOut) {
-    return res.status(504).json({
-      ok: false,
-      error: 'Gix took too long to answer. Please try again in a moment.',
+    const reply = data?.candidates?.[0]?.content?.parts
+      ?.map((part) => part.text || '')
+      .join('')
+      .trim();
+
+    if (!reply) {
+      return res.status(502).json({
+        ok: false,
+        error: 'Gix could not generate a reply. Please rephrase and try again.',
+      });
+    }
+
+    return res.json({
+      ok: true,
+      reply,
     });
-  }
-
-  console.error('Gemini API error:', lastStatus, lastDetail);
-
-  if (lastStatus === 429) {
-    return res.status(429).json({
-      ok: false,
-      error: 'Gix has hit its free daily request limit — please try again later.',
-    });
-  }
-
-  return res.status(lastStatus || 502).json({
-    ok: false,
-    error: 'Gemini API request failed.',
-    status: lastStatus,
-    detail: lastDetail,
-  });
-}
-
-const reply = data?.candidates?.[0]?.content?.parts
-  ?.map((part) => part.text || '')
-  .join('')
-  .trim();
-
-if (!reply) {
-  return res.status(502).json({
-    ok: false,
-    error: 'Gix could not generate a reply. Please rephrase and try again.',
-  });
-}
-
-return res.json({
-  ok: true,
-  reply,
-});
   } catch (err) {
-  if (err.name === 'AbortError') {
-    return res.status(504).json({
+    if (err.name === 'AbortError') {
+      return res.status(504).json({
+        ok: false,
+        error: 'Gix took too long to answer. Please try again.',
+      });
+    }
+
+    console.error('Ask Gix failed:', err.message);
+
+    return res.status(502).json({
       ok: false,
-      error: 'Gix took too long to answer. Please try again.',
+      error: 'Gix could not respond right now. Please try again later.',
+      detail:
+        process.env.NODE_ENV === 'production'
+          ? undefined
+          : err.message,
     });
   }
-
-  console.error('Ask Gix failed:', err.message);
-
-  return res.status(502).json({
-    ok: false,
-    error: 'Gix could not respond right now. Please try again later.',
-    detail:
-      process.env.NODE_ENV === 'production'
-        ? undefined
-        : err.message,
-  });
-}
 });
 
 // ============================================
@@ -705,4 +704,4 @@ server.on('error', (err) => {
 });
 
 export default app;
-```
+
