@@ -9,7 +9,10 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "server": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy": "wrangler deploy",
+    "cf:dev": "wrangler dev",
+    "cf:types": "wrangler types"
   },
   "dependencies": {
     "autoprefixer": "^10.6.1",
@@ -18,7 +21,7 @@
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
     "framer-motion": "^14.4.0",
-    "google-auth-library": "^11.3.1",
+    "google-auth-library": "^11.3.3",
     "lucide-react": "^1.59.0",
     "morgan": "^1.12.1",
     "postcss": "^8.5.31",
@@ -30,6 +33,7 @@
     "tailwindcss": "^3.4.19"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261109.1",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -37,7 +41,8 @@
     "concurrently": "^10.0.6",
     "oxlint": "^1.88.0",
     "typescript": "~7.0.2",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "wrangler": "^4.158.0"
   },
   "description": "Hostelers — expense management built for hostel and college students. Track expenses, set budgets, build savings goals and chat with Gix, a Gemini-powered AI assistant.",
   "main": "postcss.config.js",
