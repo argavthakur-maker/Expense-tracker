@@ -16,6 +16,7 @@ export function createApp(env) {
 
     const allowedOrigins = new Set([
         frontendUrl,
+        'https://expense-tracker-4dr.pages.dev',
         'https://expense-tracker-kappa-snowy.vercel.app',
         'http://localhost:5173',
         'http://localhost:5174',
@@ -221,8 +222,14 @@ export function createApp(env) {
             setSessionCookie(res, sessionToken);
 
             return res.json({
-                success: true,
-                user,
+                ok: true,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    image: user.picture,
+                    provider: 'google',
+                },
             });
 
         } catch (error) {
@@ -244,14 +251,20 @@ export function createApp(env) {
                 clearSessionCookie(res);
 
                 return res.json({
-                    success: true,
+                    ok: true,
                     user: null,
                 });
             }
 
             return res.json({
-                success: true,
-                user,
+                ok: true,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    image: user.picture,
+                    provider: 'google',
+                },
             });
 
         } catch (error) {
@@ -268,9 +281,117 @@ export function createApp(env) {
         clearSessionCookie(res);
 
         return res.json({
-            success: true,
+            ok: true,
             message: 'Logged out successfully.',
         });
+    });
+
+
+    // Ask Gix — Gemini-powered chat endpoint used by the React frontend.
+    app.post('/api/ai/chat', async (req, res) => {
+        const apiKey = env.GEMINI_API_KEY;
+        if (!apiKey) {
+            return res.status(503).json({
+                ok: false,
+                error: 'Gix is unavailable: GEMINI_API_KEY is not configured on the Worker.',
+            });
+        }
+
+        const messages = Array.isArray(req.body?.messages)
+            ? req.body.messages
+                .filter(message =>
+                    message &&
+                    typeof message.text === 'string' &&
+                    (message.role === 'user' || message.role === 'assistant')
+                )
+                .slice(-12)
+            : [];
+
+        if (!messages.some(message => message.role === 'user')) {
+            return res.status(400).json({ ok: false, error: 'No message to answer.' });
+        }
+
+        const context = req.body?.context && typeof req.body.context === 'object'
+            ? JSON.stringify(req.body.context)
+            : '';
+
+        const contents = messages.map((message, index) => {
+            const isLastUser = message.role === 'user' &&
+                !messages.slice(index + 1).some(item => item.role === 'user');
+            return {
+                role: message.role === 'assistant' ? 'model' : 'user',
+                parts: [{
+                    text: isLastUser && context
+                        ? `Financial context (use only when relevant): ${context}\n\nQuestion: ${message.text.slice(0, 4000)}`
+                        : message.text.slice(0, 4000),
+                }],
+            };
+        });
+
+        const payload = {
+            contents,
+            systemInstruction: {
+                parts: [{
+                    text: 'You are Gix, a friendly and practical AI assistant inside Hostelers, an expense tracker for Indian college and hostel students. Answer the user’s actual question first. Use the supplied financial context only when relevant. Never invent financial facts. Currency is Indian Rupees (₹). Keep answers concise, empathetic, and useful.',
+                }],
+            },
+            generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+        };
+
+        const models = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+        let lastStatus = 502;
+        let lastDetail = '';
+
+        try {
+            for (const model of models) {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const reply = data?.candidates?.[0]?.content?.parts
+                        ?.map(part => part.text || '')
+                        .join('')
+                        .trim();
+
+                    if (reply) return res.json({ ok: true, reply });
+                    return res.status(502).json({
+                        ok: false,
+                        error: 'Gix could not generate a reply. Please try again.',
+                    });
+                }
+
+                lastStatus = response.status;
+                try {
+                    const errorData = await response.json();
+                    lastDetail = errorData?.error?.message || '';
+                } catch {
+                    lastDetail = '';
+                }
+
+                if (lastStatus !== 429 && lastStatus !== 503) break;
+            }
+
+            console.error('Gix Gemini request failed:', lastStatus, lastDetail);
+            return res.status(lastStatus === 429 ? 429 : 502).json({
+                ok: false,
+                error: lastStatus === 429
+                    ? 'Gix has reached the API request limit. Please try again later.'
+                    : 'Gix could not respond right now. Please try again later.',
+            });
+        } catch (error) {
+            console.error('Gix request failed:', error);
+            return res.status(502).json({
+                ok: false,
+                error: 'Could not reach Gix right now. Please try again later.',
+            });
+        }
     });
 
     // Unknown API route
