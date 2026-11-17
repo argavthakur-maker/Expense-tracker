@@ -45,7 +45,7 @@ function AuthSessionCheck() {
 
     async function checkAuth() {
       try {
-        const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '')
+        const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
         const response = await fetch(`${apiBaseUrl}/api/auth/session`, {
           credentials: 'include',
         })
