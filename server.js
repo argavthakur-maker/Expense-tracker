@@ -130,7 +130,7 @@ function upsertUser(profile) {
 
   if (!user) {
     user = {
-      id: `user_${googleId} `,
+      id: `user_${googleId}`,
       googleId,
       email,
       name: name || email.split('@')[0],
