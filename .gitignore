@@ -43,3 +43,7 @@ dist-ssr/
 # Cloudflare local secrets
 .dev.vars
 .dev.vars.*
+
+# Wrangler local state and temporary verification files
+.wrangler/
+.tmp-verify/
