@@ -11,6 +11,8 @@
     "server": "node server.js",
     "start": "node server.js",
     "deploy": "wrangler deploy",
+    "pages:deploy": "npm run build && wrangler pages deploy dist --config wrangler.pages.jsonc",
+    "pages:dev": "wrangler pages dev dist --config wrangler.pages.jsonc",
     "cf:dev": "wrangler dev",
     "cf:types": "wrangler types"
   },
